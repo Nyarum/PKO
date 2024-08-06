@@ -1,0 +1,7 @@
+name = "PKO"
+uuid = "344cac28-5ac1-4f47-a46f-be266dac5dcb"
+authors = ["Grigorii Eleskin <nyarumilian@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
