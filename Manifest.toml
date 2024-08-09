@@ -2,7 +2,14 @@
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "31b3374e52017e9887cea642d78f05d6d99987f1"
+project_hash = "c20786929e79c3bc2a7216e12a0bbbc9451b1316"
+
+[[deps.Printf]]
+deps = ["Unicode"]
+uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
+
+[[deps.Unicode]]
+uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
