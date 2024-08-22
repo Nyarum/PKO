@@ -1,4 +1,6 @@
 
+include("../handler/Opcodes.jl")
+
 function pack(opcode::Opcode, data)
     data_len = length(data)
 

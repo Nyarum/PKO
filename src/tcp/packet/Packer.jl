@@ -1,6 +1,4 @@
 
-
-
 macro generate(struct_name)
     fields = fieldnames(eval(struct_name))
     types = map(f -> fieldtype(eval(struct_name), f), fields)
@@ -28,22 +26,32 @@ macro generate(struct_name)
             return $struct_name_eval(values...)
         end
 
-        function pack(val::$struct_name_eval)
+        function pack(val::$struct_name_eval, previous = Dict())
             buf = IOBuffer()
-            values = ()
-
 
             for (field, field_type) in zip($fields, $types)
                 field_value = getfield(val, field)
 
+                if hasmethod(save, Tuple{$struct_name_eval, :field})
+                    if save(val, field)
+                        previous[field] = field_value
+                    end
+                end
+
+                if hasmethod(filter, Tuple{$struct_name_eval, :field, :previous})
+                    if filter(val, field, previous)
+                        continue
+                    end
+                end
+
                 if field_type == Vector{UInt8}
-                    write(buf, UInt16(ntoh(length(field_value))))
+                    write(buf, hton(UInt16(length(field_value))))
                     write(buf, field_value)
                 elseif field_type == String
-                    write(buf, UInt16(ntoh(length(field_value))))
+                    write(buf, hton(UInt16(length(field_value))))
                     write(buf, field_value)
                 elseif isstructtype(field_type)
-                    write(buf, pack(field_value))
+                    write(buf, pack(field_value, previous))
                 else
                     write(buf, ntoh(field_value))
                 end
