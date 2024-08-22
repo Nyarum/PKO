@@ -1,4 +1,7 @@
 
+function save()
+end
+
 macro generate(struct_name)
     fields = fieldnames(eval(struct_name))
     types = map(f -> fieldtype(eval(struct_name), f), fields)
@@ -51,7 +54,13 @@ macro generate(struct_name)
                     write(buf, hton(UInt16(length(field_value))))
                     write(buf, field_value)
                 elseif isstructtype(field_type)
-                    write(buf, pack(field_value, previous))
+                    if field_value isa Vector
+                        for v in field_value
+                            write(buf, pack(v, previous))
+                        end
+                    else
+                        write(buf, pack(field_value, previous))
+                    end
                 else
                     write(buf, ntoh(field_value))
                 end
