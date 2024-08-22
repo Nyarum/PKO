@@ -17,7 +17,7 @@ macro generate(struct_name)
                     value = read(buf, len)
                 elseif field_type == String
                     len = ntoh(read(buf, UInt16))
-                    value = String(read(buf, len))
+                    value = String(read(buf, len))[1:end-1]
                 elseif field_type == DataType
                     value = unpack(field_type, buf)
                 else
@@ -51,8 +51,9 @@ macro generate(struct_name)
                     write(buf, hton(UInt16(length(field_value))))
                     write(buf, field_value)
                 elseif field_type == String
-                    write(buf, hton(UInt16(length(field_value))))
+                    write(buf, hton(UInt16(length(field_value) +1)))
                     write(buf, field_value)
+                    write(buf, UInt8(0))
                 elseif isstructtype(field_type)
                     if field_value isa Vector
                         for v in field_value
