@@ -2,6 +2,16 @@
 function save()
 end
 
+logger = false
+
+function print_hex(buf)
+    new_data = Vector{UInt8}()
+    copy!(new_data, buf.data)
+    hex_string = join(string.(new_data, base=16, pad=2), " ")
+
+    # Print the result
+    println(hex_string)
+end
 macro generate(struct_name)
     fields = fieldnames(eval(struct_name))
     types = map(f -> fieldtype(eval(struct_name), f), fields)
@@ -73,6 +83,16 @@ macro generate(struct_name)
                 else
                     write(buf, ntoh(field_value))
                 end
+            end
+
+            if logger
+                println("Type: ", typeof(val))
+
+                len = 1
+                if buf.ptr > 1
+                    len = buf.ptr - 1
+                end
+                println(buf.data[1:len])
             end
 
             return take!(buf)
