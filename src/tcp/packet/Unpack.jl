@@ -1,13 +1,13 @@
 
 
+struct Default
+end
+
+function pack(val)
+end
+
 module Packer
-    export @generate, pack, unpack
-
-    struct Default
-    end
-
-    function pack(val::Default)
-    end
+    export @generate, pack, unpack, @generate_many
 
     macro generate(struct_name)
         fields = fieldnames(eval(struct_name))
@@ -51,7 +51,6 @@ module Packer
                         write(buf, UInt16(ntoh(length(field_value))))
                         write(buf, field_value)
                     elseif isstructtype(field_type)
-                        println(field_value)
                         write(buf, pack(field_value))
                     else
                         write(buf, ntoh(field_value))
@@ -59,6 +58,19 @@ module Packer
                 end
 
                 return take!(buf)
+            end
+        end |> esc
+    end
+
+    macro generate_many(struct_names...)
+        structs = ()
+        for struct_name in struct_names
+            structs = (structs..., :(@generate($struct_name)))
+        end
+
+        quote
+            for s in $structs
+                eval(s)
             end
         end |> esc
     end
@@ -70,31 +82,12 @@ struct Bro
     test::UInt8
 end
 
-
-@generate Main.Bro
-
-println(pack(Bro(1)))
-
-#=
-println(@macroexpand @Packer.generate :Bro begin
-    test::UInt8
-end
-)
-
-@Packer.generate :Header begin
-    len::UInt16
-    id::UInt32
-    opcode::UInt16
+struct Test
+    test2::UInt8
     bro::Bro
 end
 
-Bro(1)
 
-println(@macroexpand @generate :Header begin
-    len::UInt16
-    id::UInt32
-    opcode::UInt16
-end)
+@generate_many Main.Bro Main.Test
 
-println(pack(Packer.Header(1, 2, 3, Packer.Bro(2))))
-=#
+Test(1, Bro(1)) |> pack |> println
