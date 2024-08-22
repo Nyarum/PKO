@@ -22,7 +22,7 @@ function handle_client(client::TCPSocket)
 
             buf = IOBuffer(data)
 
-            header = unpack_header(buf)
+            header = unpack(Header, buf)
             println("Received from client: ", header.opcode)
 
             res = route(Opcode(header.opcode), buf)
