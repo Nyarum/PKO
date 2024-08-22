@@ -54,6 +54,14 @@ macro generate(struct_name)
                     write(buf, hton(UInt16(length(field_value) +1)))
                     write(buf, field_value)
                     write(buf, UInt8(0))
+                elseif field_value isa NTuple
+                    for v in field_value
+                        if isstructtype(typeof(v))
+                            write(buf, pack(v, previous))
+                        else
+                            write(buf, v)
+                        end
+                    end
                 elseif isstructtype(field_type)
                     if field_value isa Vector
                         for v in field_value
