@@ -1,5 +1,5 @@
 
-function pack(opcode, data)
+function pack(opcode::Opcode, data)
     data_len = length(data)
 
     res = IOBuffer()

@@ -25,7 +25,7 @@ function handle_client(client::TCPSocket)
             header = unpack(Header, buf)
             println("Received from client: ", header.opcode)
 
-            res = route(Opcode(header.opcode), buf)
+            res = Opcode(header.opcode) |> x -> route(x, buf)
             if typeof(res) == Action && res == a_exit
                 break
             end
