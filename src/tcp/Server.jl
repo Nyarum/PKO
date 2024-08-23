@@ -4,6 +4,7 @@ include("packet/Chars.jl")
 include("packet/Packer.jl")
 include("handler/Auth.jl")
 include("handler/Opcodes.jl")
+include("handler/CharScreen.jl")
 
 using Sockets
 

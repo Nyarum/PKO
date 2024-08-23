@@ -109,7 +109,7 @@ end
 struct CreatePincode
     Hash::String
 
-    CreatePincode() = new("")
+    CreatePincode(hash) = new(hash)
 end
 
 @generate CreatePincode
