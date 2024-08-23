@@ -1,6 +1,7 @@
 include("Opcodes.jl")
 include("../packet/Auth.jl")
 include("Actions.jl")
+include("../packet/Chars.jl")
 
 function route(::Type{Val{auth}}, buf)
     println("auth route")
@@ -8,7 +9,7 @@ function route(::Type{Val{auth}}, buf)
     auth_body = unpack(Auth, buf)
     println(auth_body)
 
-    return getChars() |> x -> pack(response_chars, x)
+    return pack(CharacterScreen()) |> x -> pack(response_chars, x)
 end
 
 function route(::Type{Val{exit}}, buf)

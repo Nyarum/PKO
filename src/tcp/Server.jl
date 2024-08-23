@@ -3,13 +3,14 @@ include("packet/Pack.jl")
 include("packet/Chars.jl")
 include("packet/Packer.jl")
 include("handler/Auth.jl")
+include("handler/Opcodes.jl")
 
 using Sockets
 
 function handle_client(client::TCPSocket)
     println("accept client")
 
-    write(client, getFirstDate() |> x -> pack(940, x))
+    write(client, getFirstDate() |> x -> pack(first_date, x))
 
     # Read data from the client
     while isopen(client)
