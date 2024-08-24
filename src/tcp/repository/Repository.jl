@@ -2,21 +2,36 @@ using Base.Threads
 using DataFrames
 import Dates
 import CSV
+using UUIDs
+import JSON
+
+include("../packet/Chars.jl")
 
 local_lock = ReentrantLock()
 
-accounts = DataFrame()
+accounts = DataFrame(
+    id = String[],
+    login = String[],
+    password = String[],
+    created_at = Dates.DateTime[],
+    characters = CharacterCreate[]
+)
+rng = UUIDs.MersenneTwister(1234);
 
 function save_account(login, password)
     println(accounts)
     lock(local_lock) do
         row_index = findfirst(row -> row.login == login, eachrow(accounts))
 
-        println(row_index)
-
         if row_index === nothing
-            push!(accounts, (id=rand((1, 1000000)), login=login, password=password, created_at=Dates.now(), characters=[]))
+            push!(accounts, (id=string(UUIDs.uuid4(rng)), login=login, password=string(password), created_at=Dates.now(), characters=CharacterCreate[]))
         end
+    end
+end
+
+function get_account(login)
+    lock(local_lock) do
+        return accounts[accounts.login .== login, :]
     end
 end
 
@@ -43,8 +58,9 @@ function add_character(login::String, new_character)
         if row_index !== nothing
             println(row_index)
             println(accounts[row_index, :characters])
+
             # Update the 'characters' field
-            push!(accounts[row_index, :characters], new_character)
+            accounts[row_index, :characters] = JSON.json(new_character)
         else
             println("Login not found")
         end

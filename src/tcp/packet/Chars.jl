@@ -47,11 +47,11 @@ end
     Encryption::UInt32
     DWFlag::UInt32
 
-    CharacterScreen() = new(
+    CharacterScreen(characters) = new(
         0x0000,
         UInt8[0x7C, 0x35, 0x09, 0x19, 0xB2, 0x50, 0xD3, 0x49],
-        0x00,
-        Character[],
+        length(characters),
+        characters,
         1,
         0x00000000,
         12820

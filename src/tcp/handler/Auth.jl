@@ -12,12 +12,20 @@ function route(::Type{Val{auth}}, buf)
     println(auth_body)
 
     save_account(auth_body.login, auth_body.password)
-
-    println(accounts)
-
     save_login(context, auth_body.login)
 
-    return pack(CharacterScreen()) |> x -> pack(response_chars, x)
+    account = get_account(auth_body.login)
+    println("account")
+
+    characters = ()
+    println(length(account.characters))
+    println(account.characters[1])
+    for ch in account.characters
+        println(ch.name)
+        #characters = (characters..., Character(true, char.name, "job", 1, char.lookSize, char.look))
+    end
+
+    return pack(CharacterScreen([])) |> x -> pack(response_chars, x)
 end
 
 function route(::Type{Val{exit}}, buf)
