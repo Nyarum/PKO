@@ -50,17 +50,20 @@ function handle_client(client::TCPSocket)
     println("Client disconnected")
 end
 
-atexit(save_database(accounts))
-
 # Create and run the TCP server
 function start_server(port::Int)
+    load_database()
+
     server = listen(IPv4(0), port)
     println("Server is listening on port $port")
 
-    load_database()
-    
-    while true
-        client = accept(server) # Accept a new client
-        @async handle_client(client) # Handle the client asynchronously
+    try
+        while true
+            client = accept(server) # Accept a new client
+            @async handle_client(client) # Handle the client asynchronously
+        end
+    catch err
+        println("test2")
+        println(err)
     end
 end

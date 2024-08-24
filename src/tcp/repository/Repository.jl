@@ -8,6 +8,7 @@ local_lock = ReentrantLock()
 accounts = DataFrame()
 
 function save_account(login, password)
+    println(accounts)
     lock(local_lock) do
         row_index = findfirst(row -> row.login == login, eachrow(accounts))
 
@@ -19,20 +20,17 @@ function save_account(login, password)
     end
 end
 
-function save_database(accounts)
-    return function()
-        lock(local_lock) do
-            CSV.write("accounts.csv", accounts)
-        end
+function save_database()
+    lock(local_lock) do
+        CSV.write("accounts.csv", accounts)
     end
 end
 
+atexit(save_database)
+
 function load_database()
-    lock(local_lock) do
-        test = CSV.read("accounts.csv", DataFrame)
-        accounts = copy(test)
-        println(accounts)
-    end
+    global accounts = CSV.read("accounts.csv", DataFrame)
+    println(accounts)
 end
 
 # Function to update the 'characters' field for a specific login
@@ -43,6 +41,8 @@ function add_character(login::String, new_character)
 
         # Check if the row was found
         if row_index !== nothing
+            println(row_index)
+            println(accounts[row_index, :characters])
             # Update the 'characters' field
             push!(accounts[row_index, :characters], new_character)
         else
