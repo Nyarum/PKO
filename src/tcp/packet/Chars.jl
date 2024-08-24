@@ -62,7 +62,7 @@ struct CharacterScreen
         UInt8[0x7C, 0x35, 0x09, 0x19, 0xB2, 0x50, 0xD3, 0x49],
         0x00,
         Character[],
-        0x00,
+        1,
         0x00000000,
         12820
     )
@@ -75,8 +75,6 @@ struct CharacterCreate
     Map::String
     LookSize::UInt16
     Look::Look
-
-    CharacterCreate() = new("", "", 0x0000, Look(0x0000, 0x0000, ItemGrid[], 0x0000))
 end
 
 @generate CharacterCreate
@@ -92,8 +90,6 @@ end
 struct CharacterRemove
     Name::String
     Hash::String
-
-    CharacterRemove() = new("", "")
 end
 
 @generate CharacterRemove
@@ -125,8 +121,6 @@ end
 struct UpdatePincode
     OldHash::String
     Hash::String
-
-    UpdatePincode() = new("", "")
 end
 
 @generate UpdatePincode

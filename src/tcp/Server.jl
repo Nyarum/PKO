@@ -27,20 +27,26 @@ function handle_client(client::TCPSocket)
             header = unpack(Header, buf)
             println("Received from client: ", header.opcode)
 
-            res = Opcode(header.opcode) |> x -> route(x, buf)
-            if typeof(res) == Action && res == a_exit
-                break
+            @async begin
+                res = Opcode(header.opcode) |> x -> route(x, buf)
+                if res == a_exit
+                    close(client)
+                    return
+                end
+
+                write(client, res)
+            end
+        catch e
+            if e isa EOFError
+                return
             end
 
-            write(client, res)
-        catch e
-            println("Error occurred: ", e)
+            showerror(stdout, e, catch_backtrace())
             break  # Exit the loop if an error occurs (like client disconnection)
         end
     end
     
     println("Client disconnected")
-    close(client)
 end
 
 # Create and run the TCP server

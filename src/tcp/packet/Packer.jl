@@ -28,11 +28,30 @@ macro generate(struct_name)
                 elseif field_type == String
                     len = ntoh(read(buf, UInt16))
                     value = String(read(buf, len))[1:end-1]
-                elseif field_type == DataType
-                    value = unpack(field_type, buf)
+                elseif field_type <: NTuple
+                    value = ()
+                    for v in 1:fieldcount(field_type)
+                        if isstructtype(field_type.parameters[1])
+                            value = (value..., unpack(field_type.parameters[1], buf))
+                        else
+                            value = (value..., read(buf, field_type.parameters[1]))
+                        end
+                    end
+
+                    value = field_type(value)
+                elseif isstructtype(field_type)
+                    if field_type isa Vector
+                        value = field_type()
+                        for v in 1:fieldcount(field_type)
+                            unpack(field_type.parameters[1], buf) |> x -> push!(value, x)
+                        end
+                    else
+                        value = unpack(field_type, buf)
+                    end
                 else
                     value = ntoh(read(buf, field_type))
                 end
+
                 values = (values..., value)
             end
 
