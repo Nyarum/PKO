@@ -39,7 +39,7 @@ macro generate(struct_name)
                         if isstructtype(field_type.parameters[1])
                             value = (value..., unpack(field_type.parameters[1], buf))
                         else
-                            value = (value..., read(buf, field_type.parameters[1]))
+                            value = (value..., ntoh(read(buf, field_type.parameters[1])))
                         end
                     end
 

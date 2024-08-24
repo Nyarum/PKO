@@ -2,6 +2,8 @@ include("Opcodes.jl")
 include("../packet/Auth.jl")
 include("Actions.jl")
 include("../packet/Chars.jl")
+include("Context.jl")
+include("../repository/Repository.jl")
 
 function route(::Type{Val{create_pincode}}, buf)
     println("create pincode route")
@@ -15,6 +17,8 @@ function route(::Type{Val{create_character}}, buf)
     println("create character route")
 
     data = unpack(CharacterCreate, buf)
+
+    add_character(get_login(context), data)
 
     return pack(CharacterCreateReply()) |> x -> pack(create_character_reply, x)
 end

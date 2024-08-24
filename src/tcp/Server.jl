@@ -5,6 +5,7 @@ include("packet/Packer.jl")
 include("handler/Auth.jl")
 include("handler/Opcodes.jl")
 include("handler/CharScreen.jl")
+include("repository/Repository.jl")
 
 using Sockets
 
@@ -27,7 +28,7 @@ function handle_client(client::TCPSocket)
             header = unpack(Header, buf)
             println("Received from client: ", header.opcode)
 
-            @async begin
+            errormonitor(@async begin
                 res = Opcode(header.opcode) |> x -> route(x, buf)
                 if res == a_exit
                     close(client)
@@ -35,7 +36,7 @@ function handle_client(client::TCPSocket)
                 end
 
                 write(client, res)
-            end
+            end)
         catch e
             if e isa EOFError
                 return
@@ -49,10 +50,14 @@ function handle_client(client::TCPSocket)
     println("Client disconnected")
 end
 
+atexit(save_database(accounts))
+
 # Create and run the TCP server
 function start_server(port::Int)
     server = listen(IPv4(0), port)
     println("Server is listening on port $port")
+
+    load_database()
     
     while true
         client = accept(server) # Accept a new client
