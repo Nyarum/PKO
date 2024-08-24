@@ -1,20 +1,16 @@
 include("Packer.jl")
 
-struct ItemAttr
+@generate struct ItemAttr
     Attr::UInt16
     IsInit::Bool
 end
 
-@generate ItemAttr
-
-struct InstAttr
+@generate struct InstAttr
     ID::UInt16
     Value::UInt16
 end
 
-@generate InstAttr
-
-struct ItemGrid
+@generate struct ItemGrid
     ID::UInt16
     Num::UInt16
     Endure::NTuple{2, UInt16}
@@ -26,18 +22,14 @@ struct ItemGrid
     IsChange::Bool
 end
 
-@generate ItemGrid
-
-struct Look
+@generate struct Look
     Ver::UInt16
     TypeID::UInt16
     ItemGrids::NTuple{10, ItemGrid}
     Hair::UInt16
 end
 
-@generate Look
-
-struct Character
+@generate struct Character
     IsActive::Bool
     Name::String
     Job::String
@@ -46,9 +38,7 @@ struct Character
     Look::Look
 end
 
-@generate Character
-
-struct CharacterScreen
+@generate struct CharacterScreen
     ErrorCode::UInt16
     Key::Vector{UInt8}
     CharacterLen::UInt8
@@ -68,67 +58,49 @@ struct CharacterScreen
     )
 end
 
-@generate CharacterScreen
-
-struct CharacterCreate
+@generate struct CharacterCreate
     Name::String
     Map::String
     LookSize::UInt16
     Look::Look
 end
 
-@generate CharacterCreate
-
-struct CharacterCreateReply
+@generate struct CharacterCreateReply
     ErrorCode::UInt16
 
     CharacterCreateReply() = new(0x0000)
 end
 
-@generate CharacterCreateReply
-
-struct CharacterRemove
+@generate struct CharacterRemove
     Name::String
     Hash::String
 end
 
-@generate CharacterRemove
-
-struct CharacterRemoveReply
+@generate struct CharacterRemoveReply
     ErrorCode::UInt16
 
     CharacterRemoveReply() = new(0x0000)
 end
 
-@generate CharacterRemoveReply
-
-struct CreatePincode
+@generate struct CreatePincode
     Hash::String
 
     CreatePincode(hash) = new(hash)
 end
 
-@generate CreatePincode
-
-struct CreatePincodeReply
+@generate struct CreatePincodeReply
     ErrorCode::UInt16
 
     CreatePincodeReply() = new(0x0000)
 end
 
-@generate CreatePincodeReply
-
-struct UpdatePincode
+@generate struct UpdatePincode
     OldHash::String
     Hash::String
 end
 
-@generate UpdatePincode
-
-struct UpdatePincodeReply
+@generate struct UpdatePincodeReply
     ErrorCode::UInt16
 
     UpdatePincodeReply() = new(0x0000)
 end
-
-@generate UpdatePincodeReply

@@ -12,13 +12,18 @@ function print_hex(buf)
     # Print the result
     println(hex_string)
 end
+
 macro generate(struct_name)
-    fields = fieldnames(eval(struct_name))
-    types = map(f -> fieldtype(eval(struct_name), f), fields)
-    struct_name_eval = eval(struct_name)
+    eval(struct_name)
+
+    struct_def = esc(struct_name)
+    struct_type = eval(struct_def.args[1].args[2])
+ 
+    fields = fieldnames(struct_type)
+    types = map(f -> fieldtype(struct_type, f), fields)
 
     quote
-        function unpack(::Type{$struct_name_eval}, buf)
+        function unpack(::Type{$struct_type}, buf)
             values = ()
 
             for (field, field_type) in zip($fields, $types)
@@ -55,22 +60,22 @@ macro generate(struct_name)
                 values = (values..., value)
             end
 
-            return $struct_name_eval(values...)
+            return $struct_type(values...)
         end
 
-        function pack(val::$struct_name_eval, previous = Dict())
+        function pack(val::$struct_type, previous = Dict())
             buf = IOBuffer()
 
             for (field, field_type) in zip($fields, $types)
                 field_value = getfield(val, field)
 
-                if hasmethod(save, Tuple{$struct_name_eval, :field})
+                if hasmethod(save, Tuple{$struct_type, :field})
                     if save(val, field)
                         previous[field] = field_value
                     end
                 end
 
-                if hasmethod(filter, Tuple{$struct_name_eval, :field, :previous})
+                if hasmethod(filter, Tuple{$struct_type, :field, :previous})
                     if filter(val, field, previous)
                         continue
                     end
@@ -132,10 +137,8 @@ macro generate_many(struct_names...)
     end |> esc
 end
 
-struct Header
+@generate struct Header
     len::UInt16
     id::UInt32
     opcode::UInt16
 end
-
-@generate Header

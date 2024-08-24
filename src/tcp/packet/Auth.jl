@@ -1,5 +1,5 @@
 
-struct Auth
+@generate struct Auth
     key::Vector{UInt8}
     login::String
     password::Vector{UInt8}
@@ -7,5 +7,3 @@ struct Auth
     is_cheat::UInt16
     client_version::UInt16
 end
-
-@generate Auth

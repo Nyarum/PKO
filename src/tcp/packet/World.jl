@@ -20,14 +20,12 @@ const SYN_KITBAG_FORGEF = 11
 const SYN_KITBAG_BANK = 12
 const SYN_KITBAG_ATTR = 13
 
-struct Shortcut
+@generate struct Shortcut
     Type::UInt8
     GridID::UInt16
 end
 
-@generate Shortcut
-
-struct CharacterShortcut
+@generate struct CharacterShortcut
     Shortcuts::NTuple{36, Shortcut}
 
     CharacterShortcut() = new(
@@ -35,9 +33,7 @@ struct CharacterShortcut
     )
 end
 
-@generate CharacterShortcut
-
-struct KitbagItem
+@generate struct KitbagItem
     GridID::UInt16
     ID::UInt16
     Num::UInt16
@@ -53,9 +49,7 @@ struct KitbagItem
     InstAttrs::NTuple{5, InstAttr}
 end
 
-@generate KitbagItem
-
-struct CharacterKitbag
+@generate struct CharacterKitbag
     Type::UInt8
     KeybagNum::UInt16
     Items::Vector{KitbagItem}
@@ -67,16 +61,12 @@ struct CharacterKitbag
     )
 end
 
-@generate CharacterKitbag
-
-struct Attribute
+@generate struct Attribute
     ID::UInt8
     Value::UInt32
 end
 
-@generate Attribute
-
-struct CharacterAttribute
+@generate struct CharacterAttribute
     Type::UInt8
     Num::UInt16
     Attributes::Vector{Attribute}
@@ -88,16 +78,12 @@ struct CharacterAttribute
     )
 end
 
-@generate CharacterAttribute
-
-struct SkillState
+@generate struct SkillState
     ID::UInt8
     Level::UInt8
 end
 
-@generate SkillState
-
-struct CharacterSkillState
+@generate struct CharacterSkillState
     StatesLen::UInt8
     States::Vector{SkillState}
 
@@ -107,9 +93,7 @@ struct CharacterSkillState
     )
 end
 
-@generate CharacterSkillState
-
-struct CharacterSkill
+@generate struct CharacterSkill
     ID::UInt16
     State::UInt8
     Level::UInt8
@@ -121,9 +105,7 @@ struct CharacterSkill
     Params::Vector{UInt16}
 end
 
-@generate CharacterSkill
-
-struct CharacterSkillBag
+@generate struct CharacterSkillBag
     SkillID::UInt16
     Type::UInt8
     SkillNum::UInt16
@@ -137,16 +119,12 @@ struct CharacterSkillBag
     )
 end
 
-@generate CharacterSkillBag
-
-struct CharacterAppendLook
+@generate struct CharacterAppendLook
     LookID::UInt16
     IsValid::UInt8
 end
 
-@generate CharacterAppendLook
-
-struct CharacterPK
+@generate struct CharacterPK
     PkCtrl::UInt8
 
     CharacterPK() = new(
@@ -154,9 +132,7 @@ struct CharacterPK
     )
 end
 
-@generate CharacterPK
-
-struct CharacterLookBoat
+@generate struct CharacterLookBoat
     PosID::UInt16
     BoatID::UInt16
     Header::UInt16
@@ -176,17 +152,13 @@ struct CharacterLookBoat
     )
 end
 
-@generate CharacterLookBoat
-
-struct CharacterLookItemSync
+@generate struct CharacterLookItemSync
     Endure::UInt16
     Energy::UInt16
     IsValid::UInt8
 end
 
-@generate CharacterLookItemSync
-
-struct CharacterLookItemShow
+@generate struct CharacterLookItemShow
     Num::UInt16
     Endure::NTuple{2, UInt16}
     Energy::NTuple{2, UInt16}
@@ -194,9 +166,7 @@ struct CharacterLookItemShow
     IsValid::UInt8
 end
 
-@generate CharacterLookItemShow
-
-struct CharacterLookItem
+@generate struct CharacterLookItem
     SynType::UInt8
     ID::UInt16
     ItemSync::CharacterLookItemSync
@@ -218,9 +188,7 @@ struct CharacterLookItem
     )
 end
 
-@generate CharacterLookItem
-
-struct CharacterLookHuman
+@generate struct CharacterLookHuman
     HairID::UInt16
     ItemGrid::NTuple{10, CharacterLookItem}
 
@@ -230,9 +198,7 @@ struct CharacterLookHuman
     )
 end
 
-@generate CharacterLookHuman
-
-struct CharacterLook
+@generate struct CharacterLook
     SynType::UInt8
     TypeID::UInt16
     IsBoat::UInt8
@@ -248,34 +214,26 @@ struct CharacterLook
     )
 end
 
-@generate CharacterLook
-
-struct EntityEvent
+@generate struct EntityEvent
     EntityID::UInt32
     EntityType::UInt8
     EventID::UInt16
     EventName::String
 end
 
-@generate EntityEvent
-
-struct CharacterSide
+@generate struct CharacterSide
     SideID::UInt8
 
     CharacterSide() = new(0)
 end
 
-@generate CharacterSide
-
-struct Position
+@generate struct Position
     X::UInt32
     Y::UInt32
     Radius::UInt32
 end
 
-@generate Position
-
-struct CharacterBase
+@generate struct CharacterBase
     ChaID::UInt32
     WorldID::UInt32
     CommID::UInt32
@@ -327,10 +285,8 @@ struct CharacterBase
     )
 end
 
-@generate CharacterBase
-
-# Struct Definitions
-struct CharacterBoat
+# @generate Struct Definitions
+@generate struct CharacterBoat
     CharacterBase::CharacterBase
     CharacterAttribute::CharacterAttribute
     CharacterKitbag::CharacterKitbag
@@ -344,9 +300,7 @@ struct CharacterBoat
     )
 end
 
-@generate CharacterBoat
-
-struct EnterGame
+@generate struct EnterGame
     EnterRet::UInt16
     AutoLock::UInt8
     KitbagLock::UInt8
@@ -384,10 +338,6 @@ struct EnterGame
     )
 end
 
-@generate EnterGame
-
-struct EnterGameRequest
+@generate struct EnterGameRequest
     CharacterName::String
 end
-
-@generate EnterGameRequest
