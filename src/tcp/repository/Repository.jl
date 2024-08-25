@@ -38,8 +38,11 @@ end
 atexit(save_database)
 
 function load_database()
-    global accounts = JLD2.load("accounts.jld2", "accounts")
-    println(accounts)
+    try
+        global accounts = JLD2.load("accounts.jld2", "accounts")
+    catch e
+        println("Database wasn't ready but it doesn't matter at first start :)") 
+    end
 end
 
 # Function to update the 'characters' field for a specific login
