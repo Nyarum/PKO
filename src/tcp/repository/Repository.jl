@@ -3,19 +3,13 @@ using DataFrames
 import Dates
 import CSV
 using UUIDs
-import JSON
+import JLD2
 
 include("../packet/Chars.jl")
 
 local_lock = ReentrantLock()
 
-accounts = DataFrame(
-    id = String[],
-    login = String[],
-    password = String[],
-    created_at = Dates.DateTime[],
-    characters = CharacterCreate[]
-)
+accounts = DataFrame()
 rng = UUIDs.MersenneTwister(1234);
 
 function save_account(login, password)
@@ -24,27 +18,27 @@ function save_account(login, password)
         row_index = findfirst(row -> row.login == login, eachrow(accounts))
 
         if row_index === nothing
-            push!(accounts, (id=string(UUIDs.uuid4(rng)), login=login, password=string(password), created_at=Dates.now(), characters=CharacterCreate[]))
+            push!(accounts, (id=string(UUIDs.uuid4(rng)), login=login, password=string(password), created_at=Dates.now(), characters=[]))
         end
     end
 end
 
 function get_account(login)
     lock(local_lock) do
-        return accounts[accounts.login .== login, :]
+        return filter(row -> row[:login] == login, eachrow(accounts))[1]
     end
 end
 
 function save_database()
     lock(local_lock) do
-        CSV.write("accounts.csv", accounts)
+        JLD2.save("accounts.jld2", "accounts", accounts)
     end
 end
 
 atexit(save_database)
 
 function load_database()
-    global accounts = CSV.read("accounts.csv", DataFrame)
+    global accounts = JLD2.load("accounts.jld2", "accounts")
     println(accounts)
 end
 
@@ -56,11 +50,11 @@ function add_character(login::String, new_character)
 
         # Check if the row was found
         if row_index !== nothing
-            println(row_index)
-            println(accounts[row_index, :characters])
-
             # Update the 'characters' field
-            accounts[row_index, :characters] = JSON.json(new_character)
+            println(accounts[row_index, :characters])
+            println(typeof(accounts[row_index, :characters]))
+            push!(accounts[row_index, :characters], new_character)
+            println(typeof(accounts[row_index, :characters]))
         else
             println("Login not found")
         end

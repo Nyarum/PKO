@@ -17,15 +17,12 @@ function route(::Type{Val{auth}}, buf)
     account = get_account(auth_body.login)
     println("account")
 
-    characters = ()
-    println(length(account.characters))
-    println(account.characters[1])
-    for ch in account.characters
-        println(ch.name)
-        #characters = (characters..., Character(true, char.name, "job", 1, char.lookSize, char.look))
+    characters = Character[]
+    for char in account.characters
+        push!(characters, Character(true, char.Name, "job", 1, char.LookSize, char.Look))
     end
 
-    return pack(CharacterScreen([])) |> x -> pack(response_chars, x)
+    return pack(CharacterScreen(characters)) |> x -> pack(response_chars, x)
 end
 
 function route(::Type{Val{exit}}, buf)
