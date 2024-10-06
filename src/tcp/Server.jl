@@ -6,6 +6,7 @@ include("handler/Auth.jl")
 include("handler/Opcodes.jl")
 include("handler/CharScreen.jl")
 include("repository/Repository.jl")
+include("ActorLike.jl")
 
 using Sockets
 
