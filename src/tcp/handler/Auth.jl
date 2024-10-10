@@ -9,13 +9,11 @@ function route(::Type{Val{auth}}, buf)
     println("auth route")
 
     auth_body = unpack(Auth, buf)
-    println(auth_body)
 
     save_account(auth_body.login, auth_body.password)
     save_login(context, auth_body.login)
 
     account = get_account(auth_body.login)
-    println("account")
 
     characters = Character[]
     for char in account.characters

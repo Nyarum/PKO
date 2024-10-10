@@ -64,7 +64,7 @@ function start_server(port::Int)
             @async handle_client(client) # Handle the client asynchronously
         end
     catch err
-        println("test2")
+        println("can't accept client")
         println(err)
     end
 end

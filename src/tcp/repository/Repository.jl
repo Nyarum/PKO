@@ -7,13 +7,12 @@ import JLD2
 
 include("../packet/Chars.jl")
 
-local_lock = ReentrantLock()
+local_lock = SpinLock()
 
 accounts = DataFrame()
 rng = UUIDs.MersenneTwister(1234);
 
 function save_account(login, password)
-    println(accounts)
     lock(local_lock) do
         row_index = findfirst(row -> row.login == login, eachrow(accounts))
 
@@ -54,10 +53,7 @@ function add_character(login::String, new_character)
         # Check if the row was found
         if row_index !== nothing
             # Update the 'characters' field
-            println(accounts[row_index, :characters])
-            println(typeof(accounts[row_index, :characters]))
             push!(accounts[row_index, :characters], new_character)
-            println(typeof(accounts[row_index, :characters]))
         else
             println("Login not found")
         end

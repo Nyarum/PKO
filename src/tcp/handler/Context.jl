@@ -2,7 +2,7 @@
 using Base.Threads
 
 context = Dict()
-local_lock = ReentrantLock()
+local_lock = SpinLock()
 
 function save_login(context, login)
     lock(local_lock) do
