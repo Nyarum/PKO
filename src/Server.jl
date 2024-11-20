@@ -1,12 +1,6 @@
-include("packet/FirstDate.jl")
-include("packet/Pack.jl")
-include("packet/Chars.jl")
-include("packet/Packer.jl")
-include("handler/Auth.jl")
-include("handler/Opcodes.jl")
-include("handler/CharScreen.jl")
-include("repository/Repository.jl")
-include("ActorLike.jl")
+include("Packet.jl")
+include("Handler.jl")
+include("Repository.jl")
 
 using Sockets
 
