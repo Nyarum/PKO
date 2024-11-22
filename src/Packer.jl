@@ -1,8 +1,11 @@
 
+include("Handler.jl")
+
 function save()
 end
 
 logger = false
+
 
 function pack(opcode::Opcode, data)
     data_len = length(data)
@@ -14,6 +17,7 @@ function pack(opcode::Opcode, data)
     write(res, data)
     return take!(res)
 end
+
 
 function print_hex(buf)
     new_data = Vector{UInt8}()
@@ -146,10 +150,4 @@ macro generate_many(struct_names...)
             eval(s)
         end
     end |> esc
-end
-
-@generate struct Header
-    len::UInt16
-    id::UInt32
-    opcode::UInt16
 end

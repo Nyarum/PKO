@@ -4,6 +4,12 @@ include("Packer.jl")
 using Dates
 using Printf
 
+@generate struct Header
+    len::UInt16
+    id::UInt32
+    opcode::UInt16
+end
+
 @generate struct Auth
     key::Vector{UInt8}
     login::String

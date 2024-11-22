@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test",
+      "type": "shell",
+      "command": "julia",
+      "args": [
+        "--project=.",
+        "Run.jl"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": {
+        "owner": "julia",
+        "fileLocation": [
+          "absolute"
+        ],
+        "pattern": [
+          {
+            "regexp": "^(.+):(\\d+) - (.+)$",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          },
+        ]
+      }
+    },
+  ],
+}

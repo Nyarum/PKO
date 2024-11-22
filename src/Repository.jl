@@ -5,12 +5,13 @@ import CSV
 using UUIDs
 import JLD2
 
-include("../packet/Chars.jl")
+include("Packet.jl")
 
 local_lock = SpinLock()
 
 accounts = DataFrame()
 rng = UUIDs.MersenneTwister(1234);
+
 
 function save_account(login, password)
     lock(local_lock) do
@@ -27,6 +28,7 @@ function get_account(login)
         return filter(row -> row[:login] == login, eachrow(accounts))[1]
     end
 end
+
 
 function save_database()
     lock(local_lock) do
