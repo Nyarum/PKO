@@ -1,4 +1,7 @@
 using Printf
+using Base: exit_on_sigint, atexit
+
+exit_on_sigint(false)
 
 function print_last_error_for_vscode(e, parent_file="", parent_line=0)
     # Check if the error is a LoadError
@@ -11,9 +14,12 @@ function print_last_error_for_vscode(e, parent_file="", parent_line=0)
     end
 end
 
+println("Current Directory: ", pwd())
+
 try
     # Run your script or code
     include("src/PKO.jl")  # Replace this with your actual script or function
 catch e
     print_last_error_for_vscode(e)
 end
+

@@ -3,5 +3,13 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always"
   },
-  "task.verboseLogging": true
+  "task.verboseLogging": true,
+  "runOnSave.statusMessageTimeout": 3000,
+  "runOnSave.commands": [
+    {
+      "match": ".*\\.jl$",
+      "command": "workbench.action.tasks.runTask Test",
+      "runIn": "vscode"
+    }
+  ]
 }

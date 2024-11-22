@@ -23,6 +23,8 @@ function save_account(login, password)
     end
 end
 
+
+
 function get_account(login)
     lock(local_lock) do
         return filter(row -> row[:login] == login, eachrow(accounts))[1]
@@ -32,11 +34,9 @@ end
 
 function save_database()
     lock(local_lock) do
-        JLD2.save("accounts.jld2", "accounts", accounts)
+        JLD2.save("./accounts.jld2", "accounts", accounts)
     end
 end
-
-atexit(save_database)
 
 function load_database()
     try

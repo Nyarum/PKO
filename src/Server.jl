@@ -23,15 +23,20 @@ function handle_client(client::TCPSocket)
             header = unpack(Header, buf)
             println("Received from client: ", header.opcode)
 
-            errormonitor(@async begin
-                res = Opcode(header.opcode) |> x -> route(x, buf)
-                if res == a_exit
-                    close(client)
-                    return
-                end
+            @async begin
+                try
+                    res = Opcode(header.opcode) |> x -> route(x, buf)
+                    if res == a_exit
+                        close(client)
+                        return
+                    end
 
-                write(client, res)
-            end)
+                    write(client, res)
+                catch e
+                    showerror(stdout, e, catch_backtrace())
+                    close(client)
+                end
+            end
         catch e
             if e isa EOFError
                 return
@@ -60,5 +65,6 @@ function start_server(port::Int)
     catch err
         println("can't accept client")
         println(err)
+        save_database()
     end
 end
