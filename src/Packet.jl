@@ -1,16 +1,23 @@
 
+module Packet
+
+using Revise
+
 include("Packer.jl")
 
 using Dates
 using Printf
+using .Packer
 
-@generate struct Header
+import .Packer: @packer, Opcode
+
+@packer struct Header
     len::UInt16
     id::UInt32
     opcode::UInt16
 end
 
-@generate struct Auth
+@packer struct Auth
     key::Vector{UInt8}
     login::String
     password::Vector{UInt8}
@@ -19,36 +26,36 @@ end
     client_version::UInt16
 end
 
-@generate struct ItemAttr
+@packer struct ItemAttr
     Attr::UInt16
     IsInit::Bool
 end
 
-@generate struct InstAttr
+@packer struct InstAttr
     ID::UInt16
     Value::UInt16
 end
 
-@generate struct ItemGrid
+@packer struct ItemGrid
     ID::UInt16
     Num::UInt16
-    Endure::NTuple{2, UInt16}
-    Energy::NTuple{2, UInt16}
+    Endure::NTuple{2,UInt16}
+    Energy::NTuple{2,UInt16}
     ForgeLv::UInt8
-    DBParams::NTuple{2, UInt32}
-    InstAttrs::NTuple{5, InstAttr}
-    ItemAttrs::NTuple{40, ItemAttr}
+    DBParams::NTuple{2,UInt32}
+    InstAttrs::NTuple{5,InstAttr}
+    ItemAttrs::NTuple{40,ItemAttr}
     IsChange::Bool
 end
 
-@generate struct Look
+@packer struct Look
     Ver::UInt16
     TypeID::UInt16
-    ItemGrids::NTuple{10, ItemGrid}
+    ItemGrids::NTuple{10,ItemGrid}
     Hair::UInt16
 end
 
-@generate struct Character
+@packer struct Character
     IsActive::Bool
     Name::String
     Job::String
@@ -57,7 +64,7 @@ end
     Look::Look
 end
 
-@generate struct CharacterScreen
+@packer struct CharacterScreen
     ErrorCode::UInt16
     Key::Vector{UInt8}
     CharacterLen::UInt8
@@ -77,48 +84,48 @@ end
     )
 end
 
-@generate struct CharacterCreate
+@packer struct CharacterCreate
     Name::String
     Map::String
     LookSize::UInt16
     Look::Look
 end
 
-@generate struct CharacterCreateReply
+@packer struct CharacterCreateReply
     ErrorCode::UInt16
 
     CharacterCreateReply() = new(0x0000)
 end
 
-@generate struct CharacterRemove
+@packer struct CharacterRemove
     Name::String
     Hash::String
 end
 
-@generate struct CharacterRemoveReply
+@packer struct CharacterRemoveReply
     ErrorCode::UInt16
 
     CharacterRemoveReply() = new(0x0000)
 end
 
-@generate struct CreatePincode
+@packer struct CreatePincode
     Hash::String
 
     CreatePincode(hash) = new(hash)
 end
 
-@generate struct CreatePincodeReply
+@packer struct CreatePincodeReply
     ErrorCode::UInt16
 
     CreatePincodeReply() = new(0x0000)
 end
 
-@generate struct UpdatePincode
+@packer struct UpdatePincode
     OldHash::String
     Hash::String
 end
 
-@generate struct UpdatePincodeReply
+@packer struct UpdatePincodeReply
     ErrorCode::UInt16
 
     UpdatePincodeReply() = new(0x0000)
@@ -148,25 +155,25 @@ const SYN_KITBAG_FORGEF = 11
 const SYN_KITBAG_BANK = 12
 const SYN_KITBAG_ATTR = 13
 
-@generate struct Shortcut
+@packer struct Shortcut
     Type::UInt8
     GridID::UInt16
 end
 
-@generate struct CharacterShortcut
-    Shortcuts::NTuple{36, Shortcut}
+@packer struct CharacterShortcut
+    Shortcuts::NTuple{36,Shortcut}
 
     CharacterShortcut() = new(
         ntuple(i -> Shortcut(0, 0), 36)
     )
 end
 
-@generate struct KitbagItem
+@packer struct KitbagItem
     GridID::UInt16
     ID::UInt16
     Num::UInt16
-    Endure::NTuple{2, UInt16}
-    Energy::NTuple{2, UInt16}
+    Endure::NTuple{2,UInt16}
+    Energy::NTuple{2,UInt16}
     ForgeLevel::UInt8
     IsValid::Bool
     ItemDBInstID::UInt32
@@ -174,10 +181,10 @@ end
     BoatNull::UInt32
     ItemDBInstID2::UInt32
     IsParams::Bool
-    InstAttrs::NTuple{5, InstAttr}
+    InstAttrs::NTuple{5,InstAttr}
 end
 
-@generate struct CharacterKitbag
+@packer struct CharacterKitbag
     Type::UInt8
     KeybagNum::UInt16
     Items::Vector{KitbagItem}
@@ -189,12 +196,12 @@ end
     )
 end
 
-@generate struct Attribute
+@packer struct Attribute
     ID::UInt8
     Value::UInt32
 end
 
-@generate struct CharacterAttribute
+@packer struct CharacterAttribute
     Type::UInt8
     Num::UInt16
     Attributes::Vector{Attribute}
@@ -206,12 +213,12 @@ end
     )
 end
 
-@generate struct SkillState
+@packer struct SkillState
     ID::UInt8
     Level::UInt8
 end
 
-@generate struct CharacterSkillState
+@packer struct CharacterSkillState
     StatesLen::UInt8
     States::Vector{SkillState}
 
@@ -221,7 +228,7 @@ end
     )
 end
 
-@generate struct CharacterSkill
+@packer struct CharacterSkill
     ID::UInt16
     State::UInt8
     Level::UInt8
@@ -233,7 +240,7 @@ end
     Params::Vector{UInt16}
 end
 
-@generate struct CharacterSkillBag
+@packer struct CharacterSkillBag
     SkillID::UInt16
     Type::UInt8
     SkillNum::UInt16
@@ -247,12 +254,12 @@ end
     )
 end
 
-@generate struct CharacterAppendLook
+@packer struct CharacterAppendLook
     LookID::UInt16
     IsValid::UInt8
 end
 
-@generate struct CharacterPK
+@packer struct CharacterPK
     PkCtrl::UInt8
 
     CharacterPK() = new(
@@ -260,7 +267,7 @@ end
     )
 end
 
-@generate struct CharacterLookBoat
+@packer struct CharacterLookBoat
     PosID::UInt16
     BoatID::UInt16
     Header::UInt16
@@ -280,29 +287,29 @@ end
     )
 end
 
-@generate struct CharacterLookItemSync
+@packer struct CharacterLookItemSync
     Endure::UInt16
     Energy::UInt16
     IsValid::UInt8
 end
 
-@generate struct CharacterLookItemShow
+@packer struct CharacterLookItemShow
     Num::UInt16
-    Endure::NTuple{2, UInt16}
-    Energy::NTuple{2, UInt16}
+    Endure::NTuple{2,UInt16}
+    Energy::NTuple{2,UInt16}
     ForgeLevel::UInt8
     IsValid::UInt8
 end
 
-@generate struct CharacterLookItem
+@packer struct CharacterLookItem
     SynType::UInt8
     ID::UInt16
     ItemSync::CharacterLookItemSync
     ItemShow::CharacterLookItemShow
     IsDBParams::UInt8
-    DBParams::NTuple{2, UInt32}
+    DBParams::NTuple{2,UInt32}
     IsInstAttrs::UInt8
-    InstAttrs::NTuple{5, InstAttr}
+    InstAttrs::NTuple{5,InstAttr}
 
     CharacterLookItem() = new(
         0,
@@ -316,9 +323,9 @@ end
     )
 end
 
-@generate struct CharacterLookHuman
+@packer struct CharacterLookHuman
     HairID::UInt16
-    ItemGrid::NTuple{10, CharacterLookItem}
+    ItemGrid::NTuple{10,CharacterLookItem}
 
     CharacterLookHuman() = new(
         2817,
@@ -326,7 +333,7 @@ end
     )
 end
 
-@generate struct CharacterLook
+@packer struct CharacterLook
     SynType::UInt8
     TypeID::UInt16
     IsBoat::UInt8
@@ -342,26 +349,26 @@ end
     )
 end
 
-@generate struct EntityEvent
+@packer struct EntityEvent
     EntityID::UInt32
     EntityType::UInt8
     EventID::UInt16
     EventName::String
 end
 
-@generate struct CharacterSide
+@packer struct CharacterSide
     SideID::UInt8
 
     CharacterSide() = new(0)
 end
 
-@generate struct Position
+@packer struct Position
     X::UInt32
     Y::UInt32
     Radius::UInt32
 end
 
-@generate struct CharacterBase
+@packer struct CharacterBase
     ChaID::UInt32
     WorldID::UInt32
     CommID::UInt32
@@ -384,7 +391,7 @@ end
     EntityEvent::EntityEvent
     Look::CharacterLook
     PkCtrl::CharacterPK
-    LookAppend::NTuple{4, CharacterAppendLook}
+    LookAppend::NTuple{4,CharacterAppendLook}
 
     CharacterBase() = new(
         240,
@@ -413,8 +420,8 @@ end
     )
 end
 
-# @generate Struct Definitions
-@generate struct CharacterBoat
+# @packer Struct Definitions
+@packer struct CharacterBoat
     CharacterBase::CharacterBase
     CharacterAttribute::CharacterAttribute
     CharacterKitbag::CharacterKitbag
@@ -428,7 +435,7 @@ end
     )
 end
 
-@generate struct EnterGame
+@packer struct EnterGame
     EnterRet::UInt16
     AutoLock::UInt8
     KitbagLock::UInt8
@@ -466,6 +473,8 @@ end
     )
 end
 
-@generate struct EnterGameRequest
+@packer struct EnterGameRequest
     CharacterName::String
+end
+
 end

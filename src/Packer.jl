@@ -1,5 +1,10 @@
+module Packer
+
+using Revise
 
 include("Handler.jl")
+
+import .Handler: Opcode
 
 function save()
 end
@@ -28,12 +33,12 @@ function print_hex(buf)
     println(hex_string)
 end
 
-macro generate(struct_name)
+macro packer(struct_name)
     eval(struct_name)
 
     struct_def = esc(struct_name)
     struct_type = eval(struct_def.args[1].args[2])
- 
+
     fields = fieldnames(struct_type)
     types = map(f -> fieldtype(struct_type, f), fields)
 
@@ -78,19 +83,19 @@ macro generate(struct_name)
             return $struct_type(values...)
         end
 
-        function pack(val::$struct_type, previous = Dict())
+        function pack(val::$struct_type, previous=Dict())
             buf = IOBuffer()
 
             for (field, field_type) in zip($fields, $types)
                 field_value = getfield(val, field)
 
-                if hasmethod(save, Tuple{$struct_type, :field})
+                if hasmethod(save, Tuple{$struct_type,:field})
                     if save(val, field)
                         previous[field] = field_value
                     end
                 end
 
-                if hasmethod(filter, Tuple{$struct_type, :field, :previous})
+                if hasmethod(filter, Tuple{$struct_type,:field,:previous})
                     if filter(val, field, previous)
                         continue
                     end
@@ -100,7 +105,7 @@ macro generate(struct_name)
                     write(buf, hton(UInt16(length(field_value))))
                     write(buf, field_value)
                 elseif field_type == String
-                    write(buf, hton(UInt16(length(field_value) +1)))
+                    write(buf, hton(UInt16(length(field_value) + 1)))
                     write(buf, field_value)
                     write(buf, UInt8(0))
                 elseif field_value isa NTuple
@@ -150,4 +155,8 @@ macro generate_many(struct_names...)
             eval(s)
         end
     end |> esc
+end
+
+export packer, pack
+
 end

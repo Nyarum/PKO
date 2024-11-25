@@ -1,13 +1,28 @@
-include("Packet.jl")
-include("Handler.jl")
-include("Repository.jl")
-
 using Sockets
+using Lazy
+
+includet("Repository.jl")
+includet("Packet.jl")
+includet("Packer.jl")
+includet("Handler.jl")
+
+import .Repository
+import .Packet: getFirstDate, Opcode, pack
+import .Handler: first_date
+import .Packer: pack
+
+function test()
+    println("test 2 2 2")
+end
 
 function handle_client(client::TCPSocket)
     println("accept client")
 
-    write(client, getFirstDate() |> x -> pack(first_date, x))
+    try
+        @>> getFirstDate() pack(first_date) write(client)
+    catch e
+        showerror(stdout, e, catch_backtrace())
+    end
 
     # Read data from the client
     while isopen(client)
@@ -46,13 +61,14 @@ function handle_client(client::TCPSocket)
             break  # Exit the loop if an error occurs (like client disconnection)
         end
     end
-    
+
     println("Client disconnected")
 end
 
 # Create and run the TCP server
 function start_server(port::Int)
-    load_database()
+    Repository.load_database()
+    @async Repository.save_database()
 
     server = listen(IPv4(0), port)
     println("Server is listening on port $port")
@@ -65,6 +81,5 @@ function start_server(port::Int)
     catch err
         println("can't accept client")
         println(err)
-        save_database()
     end
 end

@@ -1,16 +1,37 @@
-using Base.Threads
-using DataFrames
+
+
+module Repository
+
 import Dates
 import CSV
-using UUIDs
 import JLD2
 
-include("Packet.jl")
+using Base.Threads
+using DataFrames
+using UUIDs
 
 local_lock = SpinLock()
 
 accounts = DataFrame()
-rng = UUIDs.MersenneTwister(1234);
+rng = UUIDs.MersenneTwister(1234)
+
+
+function save_database()
+    while true
+        sleep(5)
+        lock(local_lock) do
+            JLD2.save("./accounts.jld2", "accounts", accounts)
+        end
+    end
+end
+
+function load_database()
+    try
+        global accounts = JLD2.load("accounts.jld2", "accounts")
+    catch e
+        println("Database wasn't ready but it doesn't matter at first start :)")
+    end
+end
 
 
 function save_account(login, password)
@@ -24,25 +45,9 @@ function save_account(login, password)
 end
 
 
-
 function get_account(login)
     lock(local_lock) do
         return filter(row -> row[:login] == login, eachrow(accounts))[1]
-    end
-end
-
-
-function save_database()
-    lock(local_lock) do
-        JLD2.save("./accounts.jld2", "accounts", accounts)
-    end
-end
-
-function load_database()
-    try
-        global accounts = JLD2.load("accounts.jld2", "accounts")
-    catch e
-        println("Database wasn't ready but it doesn't matter at first start :)") 
     end
 end
 
@@ -60,4 +65,6 @@ function add_character(login::String, new_character)
             println("Login not found")
         end
     end
+end
+
 end

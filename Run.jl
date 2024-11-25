@@ -1,7 +1,7 @@
 using Printf
 using Base: exit_on_sigint, atexit
 
-exit_on_sigint(false)
+#exit_on_sigint(false)
 
 function print_last_error_for_vscode(e, parent_file="", parent_line=0)
     # Check if the error is a LoadError

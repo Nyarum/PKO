@@ -1,7 +1,5 @@
+println("Loading PKO.jl...")
 
-include("Server.jl")
+includet("Server.jl")
 
 start_server(1973)
-
-
-

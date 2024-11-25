@@ -1,10 +1,12 @@
 
 
+module Handler
+
 using Base.Threads
 
-@enum Opcode auth=431 exit=432 response_chars=931 first_date=940 create_pincode=346 create_pincode_reply=941 create_character=435 create_character_reply=935 remove_character=436 remove_character_reply=936 update_pincode=347 update_pincode_reply=942
+@enum Opcode auth = 431 exit = 432 response_chars = 931 first_date = 940 create_pincode = 346 create_pincode_reply = 941 create_character = 435 create_character_reply = 935 remove_character = 436 remove_character_reply = 936 update_pincode = 347 update_pincode_reply = 942
 
-@enum Action a_exit=1
+@enum Action a_exit = 1
 
 context = Dict()
 local_lock = SpinLock()
@@ -25,7 +27,7 @@ end
 route(v::Opcode, data) = route(Val{v}, data)
 
 function route(::Type{Val{auth}}, buf)
-    println("auth route")
+    println("auth route222")
 
     auth_body = unpack(Auth, buf)
 
@@ -82,4 +84,6 @@ function route(::Type{Val{update_pincode}}, buf)
     println(data)
 
     return pack(UpdatePincodeReply()) |> x -> pack(update_pincode_reply, x)
+end
+
 end
