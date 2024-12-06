@@ -1,11 +1,3 @@
-module Packer
-
-using Revise
-
-include("Handler.jl")
-
-import .Handler: Opcode
-
 function save()
 end
 
@@ -155,8 +147,4 @@ macro generate_many(struct_names...)
             eval(s)
         end
     end |> esc
-end
-
-export packer, pack
-
 end

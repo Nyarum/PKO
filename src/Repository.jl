@@ -1,20 +1,7 @@
-
-
-module Repository
-
-import Dates
-import CSV
-import JLD2
-
-using Base.Threads
-using DataFrames
-using UUIDs
-
 local_lock = SpinLock()
 
 accounts = DataFrame()
 rng = UUIDs.MersenneTwister(1234)
-
 
 function save_database()
     while true
@@ -65,6 +52,4 @@ function add_character(login::String, new_character)
             println("Login not found")
         end
     end
-end
-
 end

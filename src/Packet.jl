@@ -1,16 +1,3 @@
-
-module Packet
-
-using Revise
-
-include("Packer.jl")
-
-using Dates
-using Printf
-using .Packer
-
-import .Packer: @packer, Opcode
-
 @packer struct Header
     len::UInt16
     id::UInt32
@@ -475,6 +462,4 @@ end
 
 @packer struct EnterGameRequest
     CharacterName::String
-end
-
 end

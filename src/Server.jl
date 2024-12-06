@@ -1,19 +1,38 @@
+import Dates
+import CSV
+import JLD2
+
+using Base.Threads
+using DataFrames
+using UUIDs
 using Sockets
 using Lazy
+using Dates
+using Printf
 
-includet("Repository.jl")
-includet("Packet.jl")
-includet("Packer.jl")
-includet("Handler.jl")
+# OPCODES
 
-import .Repository
-import .Packet: getFirstDate, Opcode, pack
-import .Handler: first_date
-import .Packer: pack
+@enum Opcode auth = 431 exit = 432 response_chars = 931 first_date = 940 create_pincode = 346 create_pincode_reply = 941 create_character = 435 create_character_reply = 935 remove_character = 436 remove_character_reply = 936 update_pincode = 347 update_pincode_reply = 942
 
-function test()
-    println("test 2 2 2")
-end
+@enum Action a_exit = 1
+
+# MACROS
+
+include("Packer.jl")
+
+# PACKETS
+
+include("Packet.jl")
+
+# REPOSITORY
+
+include("Repository.jl")
+
+# HANDLERS
+
+include("Route.jl")
+
+# SERVER
 
 function handle_client(client::TCPSocket)
     println("accept client")
@@ -67,8 +86,8 @@ end
 
 # Create and run the TCP server
 function start_server(port::Int)
-    Repository.load_database()
-    @async Repository.save_database()
+    load_database()
+    @async save_database()
 
     server = listen(IPv4(0), port)
     println("Server is listening on port $port")
