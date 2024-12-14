@@ -15,6 +15,10 @@ run-gui-w:
 run-gui: build
 	julia --project=. src/Utils/GUI.jl
 
+.PHONY: run-proxy
+run-proxy:
+	julia --project=. src/PKO.jl proxy
+
 .PHONY: run
 run:
 	julia --project=. src/PKO.jl
