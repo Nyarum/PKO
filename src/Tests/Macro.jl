@@ -1,10 +1,16 @@
-struct Bro
-    ID
+include("../Opcodes.jl")
+include("../Packer.jl")
 
-    test(id) = Bro(id)
+@packer struct CharacterRemove2
+    Name::String, Dict("One" => true, "test2" => false)
+    Hash::String
 end
 
-# Create an instance of Bro with ID = 42
-bro_instance = Bro(42)
+@packer struct CharacterRemove
+    One::Int, :save
+    Bro::CharacterRemove2
+end
 
-println(bro_instance)  # Outputs: Bro(42)
+println(CharacterRemove(1, CharacterRemove2("", "")))
+
+println(CharacterRemove2_metadata[:Name]["Test"])

@@ -25,9 +25,24 @@ function print_hex(buf)
     println(hex_string)
 end
 
-macro packer(struct_name)
-    eval(struct_name)
+function _print_expr(expr, level=0)
+    indent = "  "^level
+    println(indent, "Head: ", expr.head)
+    println(indent, "Arguments: ")
+    for (i, arg) in enumerate(expr.args)
+        println(indent, "  Argument $i: $arg (Type: $(typeof(arg)))")
+        if arg isa Expr
+            _print_expr(arg, level + 1)  # Recursive call for nested expressions
+        end
+    end
+end
 
+macro packer2(expr)
+    _print_expr(expr)
+end
+
+
+macro packer_functions(struct_name)
     struct_def = esc(struct_name)
     struct_type = eval(struct_def.args[1].args[2])
 
@@ -134,6 +149,70 @@ macro packer(struct_name)
             return take!(buf)
         end
     end |> esc
+end
+
+macro packer(expr)
+    dump(expr)
+    # Ensure the input starts with `struct`
+    if expr.head !== :struct
+        throw(ArgumentError("Expected `@packer2 struct ...`"))
+    end
+
+    # Extract struct name and body
+    struct_name = expr.args[2]  # Second argument is the struct name (Symbol)
+    body = expr.args[3]         # Third argument is the body (Expr with `head = :block`)
+
+    # Prepare to collect fields and metadata
+    fields = []
+    metadata = Dict{Symbol,Any}()
+
+    # Parse each field in the block
+    for field_expr in body.args
+        if field_expr isa LineNumberNode
+            continue
+        end
+
+        # Check if field is a tuple (e.g., `Name::String, ("Test", true)`)
+        if field_expr.head === :tuple
+            # Extract field definition (e.g., `Name::String`) and attributes (e.g., `("Test", true)`)
+            field_def = field_expr.args[1]
+            attributes = field_expr.args[2]
+
+            # Parse field name and type from `Name::String`
+            if field_def.head === :(::)
+                field_name = field_def.args[1]
+                field_type = field_def.args[2]
+                push!(fields, (field_name, field_type))
+                metadata[field_name] = eval(attributes)
+            else
+                throw(ArgumentError("Field must have a type definition, e.g., Name::String"))
+            end
+        elseif field_expr.head === :(::)
+            # Field without attributes (e.g., `Hash::String`)
+            field_name = field_expr.args[1]
+            field_type = field_expr.args[2]
+            push!(fields, (field_name, field_type))
+        else
+            throw(ArgumentError("Unexpected field format"))
+        end
+    end
+
+    # Generate the struct definition
+    struct_fields = [Expr(:(::), field[1], field[2]) for field in fields]
+    struct_def = Expr(
+        :struct,
+        false,
+        struct_name,
+        Expr(:block, struct_fields...)
+    )
+
+    eval(struct_def)
+
+    # Return the struct definition and metadata
+    quote
+        @packer_functions $struct_def
+        const $(Symbol(struct_name, "_metadata")) = $metadata
+    end |> eval
 end
 
 macro generate_many(struct_names...)
